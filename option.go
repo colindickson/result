@@ -17,7 +17,8 @@ const (
 	None   = OptionKind(1)
 	Error  = OptionKind(2)
 	NotSet = OptionKind(9999)
-	never  = OptionKind(-1) //used for tests
+
+	neverSet = OptionKind(-1) //used for testing
 )
 
 type Option[T any] struct {

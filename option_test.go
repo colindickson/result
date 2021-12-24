@@ -43,42 +43,6 @@ func TestOptionUnwrap(t *testing.T) {
 }
 
 func TestOptionWait(t *testing.T) {
-	option := NewOption[string]()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	var waitSuccess bool
-
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-
-	var value string
-	var err error
-
-	go func() {
-		defer wg.Done()
-
-		value, err = option.Wait(ctx)
-		waitSuccess = true
-	}()
-
-	option.SetSome("foo")
-
-	wg.Wait()
-
-	if !waitSuccess {
-		t.Fatal("wait failed")
-	}
-
-	if err != nil {
-		t.Fatalf("wait gave unexpected error: %v", err.Error())
-	}
-
-	if value != "foo" {
-		t.Fatalf("wait gave unexpected value: %v", value)
-	}
-
 	type test struct {
 		input         *Option[string]
 		kind          OptionKind
@@ -95,7 +59,7 @@ func TestOptionWait(t *testing.T) {
 		{input: someOption, kind: Some, expectError: false, expectedValue: "some"},
 		{input: noneOption, kind: None, expectError: true, expectedValue: ""},
 		{input: errOption, kind: Error, expectError: true, expectedValue: ""},
-		{input: neverOption, kind: never, expectError: true, expectedValue: ""},
+		{input: neverOption, kind: neverSet, expectError: true, expectedValue: ""},
 	}
 
 	for _, tc := range tests {
@@ -124,8 +88,8 @@ func TestOptionWait(t *testing.T) {
 			tc.input.SetNone()
 		case Error:
 			tc.input.SetError(fmt.Errorf("error"))
-		case never:
-			// nothing ever set, let wait context fail
+		case neverSet:
+			// nothing ever set, let the wait context fail
 		}
 
 		wg.Wait()
