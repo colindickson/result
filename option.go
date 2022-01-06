@@ -42,13 +42,6 @@ func NewOption[T any]() *Option[T] {
 }
 
 func (o *Option[T]) SetSome(value T) *Option[T] {
-	o.setterMux.RLock()
-	if o.isSet {
-		o.setterMux.RUnlock()
-		return o
-	}
-	o.setterMux.RUnlock()
-
 	o.setOnce.Do(func() {
 		o.setterMux.Lock()
 		defer o.setterMux.Unlock()
@@ -63,13 +56,6 @@ func (o *Option[T]) SetSome(value T) *Option[T] {
 }
 
 func (o *Option[T]) SetNone() *Option[T] {
-	o.setterMux.RLock()
-	if o.isSet {
-		o.setterMux.RUnlock()
-		return o
-	}
-	o.setterMux.RUnlock()
-
 	o.setOnce.Do(func() {
 		o.setterMux.Lock()
 		defer o.setterMux.Unlock()
@@ -87,13 +73,6 @@ func (o *Option[T]) SetNone() *Option[T] {
 }
 
 func (o *Option[T]) SetError(e error) *Option[T] {
-	o.setterMux.RLock()
-	if o.isSet {
-		o.setterMux.RUnlock()
-		return o
-	}
-	o.setterMux.RUnlock()
-
 	o.setOnce.Do(func() {
 		o.setterMux.Lock()
 		defer o.setterMux.Unlock()
